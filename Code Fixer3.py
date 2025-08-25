@@ -13,16 +13,16 @@ if st.button("Generate Trigger"):
     try:
         data = json.loads(input_json)
 
-        # Extract ALL phone numbers (anywhere in JSON)
-        json_string = json.dumps(data)
-        phones = re.findall(r'"(\+?\d{10,})"', json_string)
+        # Extract ALL phone numbers from the JSON as strings, regardless of key
+        raw_text = json.dumps(data)
+        phone_numbers = re.findall(r'"(\+?1?\d{10})\s*"', raw_text)
 
-        # Remove duplicates and clean formatting
-        unique_numbers = list(set([p.strip().replace("+1", "") for p in phones]))
+        # Remove duplicates and strip trailing spaces
         allowed_numbers = []
-        for p in unique_numbers:
-            allowed_numbers.append(p)
-            allowed_numbers.append(f"+1{p}")
+        for phone in set(phone_numbers):
+            cleaned_phone = phone.strip()
+            allowed_numbers.append(cleaned_phone)
+            allowed_numbers.append(f"+1{cleaned_phone}" if not cleaned_phone.startswith("+1") else cleaned_phone)
 
         trigger = f"""@trigger voice.call_received(phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={allowed_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
 def wf(obj):
