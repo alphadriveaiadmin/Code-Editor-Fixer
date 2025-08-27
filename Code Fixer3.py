@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import re
 
-st.set_page_config(page_title="Voice Call Trigger", layout="wide")
+st.set_page_config(page_title="TechWall Code Editor Creator", layout="wide")
 
 st.title("TechWall Code Editor Creator")
 
