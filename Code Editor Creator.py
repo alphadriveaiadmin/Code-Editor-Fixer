@@ -8,7 +8,19 @@ st.set_page_config(page_title="Code Editor Creator", layout="wide")
 def extract_phone_numbers(text):
     # Finds phone numbers with optional +1 and strips spaces
     phone_pattern = r"(?:\+?1)?\d{10}"
-    return list(set(match.strip() for match in re.findall(phone_pattern, text.replace(" ", ""))))
+    found_numbers = re.findall(phone_pattern, text.replace(" ", ""))
+
+    # Preserve order & include both with +1 and without
+    result = []
+    seen = set()
+    for num in found_numbers:
+        base_num = num[-10:]  # last 10 digits
+        variants = [base_num, f"+1{base_num}"]
+        for v in variants:
+            if v not in seen:
+                result.append(v)
+                seen.add(v)
+    return result
 
 # ---------- Home Page ----------
 if "page" not in st.session_state:
