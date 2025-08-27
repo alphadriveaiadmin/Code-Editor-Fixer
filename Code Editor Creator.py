@@ -20,15 +20,15 @@ if st.session_state.page == "home":
     with col1:
         if st.button("TechWall Code Editor Creator"):
             st.session_state.page = "techwall"
-            st.experimental_rerun()
+            st.rerun()
     with col2:
         if st.button("Xtime Code Editor Creator"):
             st.session_state.page = "xtime"
-            st.experimental_rerun()
+            st.rerun()
     with col3:
         if st.button("MyKaarma Code Editor Creator"):
             st.session_state.page = "mykaarma"
-            st.experimental_rerun()
+            st.rerun()
 
 # ---------- TechWall Code Editor ----------
 elif st.session_state.page == "techwall":
