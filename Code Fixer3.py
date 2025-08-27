@@ -4,7 +4,7 @@ import re
 
 st.set_page_config(page_title="Voice Call Trigger", layout="wide")
 
-st.title("Voice Call Trigger Generator")
+st.title("TechWall Code Editor Creator")
 
 # Text area for JSON input
 input_json = st.text_area("Paste JSON Input Here", height=400)
