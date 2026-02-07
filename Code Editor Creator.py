@@ -48,37 +48,39 @@ if st.session_state.page == "home":
 elif st.session_state.page == "techwall":
     st.title("TechWall Code Editor Creator")
 
-campaign_col, _ = st.columns([1, 3])
-with campaign_col:
-    campaign_id = st.text_input(
-        "Campaign ID",
-        max_chars=4,
-        placeholder="1234",
-        help="Enter the 4-digit campaign ID for the webhook.",
-    )
-    
-raw_json = ""
+    campaign_col, _ = st.columns([1, 3])
+    with campaign_col:
+        campaign_id = st.text_input(
+            "Campaign ID",
+            max_chars=4,
+            placeholder="1234",
+            help="Enter the 4-digit campaign ID for the webhook.",
+        )
 
-if st.button("Generate TW Code Editor"):
-    if not campaign_id.strip():
-        error_message = "Please enter a 4-digit campaign ID before generating."
-    elif not campaign_id.isdigit() or len(campaign_id) != 4:
-        error_message = "Campaign ID must be exactly 4 digits."
-    else:
-        try:
-            response = requests.post(
-                "https://apps.dgaauto.com/virtualAgentData/webhook",
-                params={"campaign_id": campaign_id},
-                timeout=15,
-            )
-            response.raise_for_status()
-            if response.headers.get("content-type", "").lower().startswith("application/json"):
-                raw_json = json.dumps(response.json())
-            else:
+    raw_json = ""
+
+    if st.button("Generate TW Code Editor"):
+        if not campaign_id.strip():
+            error_message = "Please enter a 4-digit campaign ID before generating."
+        elif not campaign_id.isdigit() or len(campaign_id) != 4:
+            error_message = "Campaign ID must be exactly 4 digits."
+        else:
+            try:
+                response = requests.post(
+                    "https://apps.dgaauto.com/virtualAgentData/webhook",
+                    params={"campaign_id": campaign_id},
+                    timeout=15,
+                )
+                response.raise_for_status()
+                if response.headers.get("content-type", "").lower().startswith("application/json"):
+                    raw_json = json.dumps(response.json())
+                else:
+                    raw_json = response.text
+
                 data = json.loads(raw_json)
                 all_numbers = extract_phone_numbers(raw_json)
 
-            trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
+                trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
 def wf(obj):
     data = extract.extract_from_features(obj=obj['transcript'], features=features, featuresToExtract=['first_name', 'last_name', 'sentiment', 'email_address', 'vehicle_make', 'vehicle_model', 'vehicle_year', 'appointment_date', 'summary', 'disposition', 'disposition_id', 'transportation_type',  'callback_time', 'callback', 'has_multiple_accounts', 'book_appointment_error'])
     data["transcript"] = obj["transcript"]
@@ -97,9 +99,9 @@ def wf(obj):
     console.log("reporting")
     reporting_res = api.post_req(url ="https://apps.dgaauto.com/virtualAgentDataImport/webhook", headers={{"x-api-key": "$2a$11$5GHNF.BbEILij03XRr163eV0lrbRGu6Rq.jlycXAvB.fddAZkO5GK"}}, data={{"id": row_id, "campaign_id": {data['campaign_id']}, "recording": data["recording"], "transcript": data['transcript'], "api_logs":obj['functions'], "call_status": data['call_status'], "call_id": data['call_id'], "start_time": data['start_time'], "end_time": data['end_time'], "first_name": data["first_name"], "last_name": data["last_name"], "phone_number": data["phone_number"], "sentiment": data["sentiment"], "email_address": data["email_address"], "vehicle_make": data["vehicle_make"], "vehicle_model": data["vehicle_model"], "vehicle_year": data["vehicle_year"], "appointment_date": data["appointment_date"], "summary": data["summary"], "disposition": data["disposition"], "disposition_id": data["disposition_id"], "transportation_type": data["transportation_type"], "callback_time": data["callback_time"], "callback": data["callback"], "has_multiple_accounts": data["has_multiple_accounts"], "book_appointment_error": data["book_appointment_error"]}})
     s3.upload_file_from_url(url=obj["recording_url"], imageName=f"{{call_id}}-{data['dealership_id']}", fileExtension="wav")"""
-            st.code(trigger, language="python")
-        except Exception as e:
-            st.error(f"Error parsing JSON: {e}")
+                st.code(trigger, language="python")
+            except Exception as e:
+                st.error(f"Error parsing JSON: {e}")
 
 # ---------- Xtime Code Editor ----------
 elif st.session_state.page == "xtime":
