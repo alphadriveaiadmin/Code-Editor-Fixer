@@ -54,9 +54,11 @@ with campaign_col:
         placeholder="1234",
         help="Enter the 4-digit campaign ID for the webhook.",
     )
+    
+raw_json = ""
 
-    raw_json = ""
-if not campaign_id.strip():
+if st.button("Generate TW Code Editor"):
+    if not campaign_id.strip():
         error_message = "Please enter a 4-digit campaign ID before generating."
     elif not campaign_id.isdigit() or len(campaign_id) != 4:
         error_message = "Campaign ID must be exactly 4 digits."
