@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import re
+import requests
 
 st.set_page_config(page_title="Code Editor Creator", layout="wide")
 
@@ -45,11 +46,33 @@ if st.session_state.page == "home":
 # ---------- TechWall Code Editor ----------
 elif st.session_state.page == "techwall":
     st.title("TechWall Code Editor Creator")
-    input_json = st.text_area("Paste JSON Input Here", height=400)
-    if st.button("Generate TechWall Trigger"):
+    campaign_col, _ = st.columns([1, 3])
+with campaign_col:
+    campaign_id = st.text_input(
+        "Campaign ID",
+        max_chars=4,
+        placeholder="1234",
+        help="Enter the 4-digit campaign ID for the webhook.",
+    )
+
+    raw_json = ""
+if not campaign_id.strip():
+        error_message = "Please enter a 4-digit campaign ID before generating."
+    elif not campaign_id.isdigit() or len(campaign_id) != 4:
+        error_message = "Campaign ID must be exactly 4 digits."
+    else:
         try:
-            data = json.loads(input_json)
-            all_numbers = extract_phone_numbers(input_json)
+            response = requests.post(
+                "https://apps.dgaauto.com/virtualAgentData/webhook",
+                params={"campaign_id": campaign_id},
+                timeout=15,
+            )
+            response.raise_for_status()
+            if response.headers.get("content-type", "").lower().startswith("application/json"):
+                raw_json = json.dumps(response.json())
+            else:
+            data = json.loads(raw_json)
+            all_numbers = extract_phone_numbers(raw_json)
 
             trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
 def wf(obj):
