@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import re
+
 import requests
 
 st.set_page_config(page_title="Code Editor Creator", layout="wide")
@@ -46,7 +47,8 @@ if st.session_state.page == "home":
 # ---------- TechWall Code Editor ----------
 elif st.session_state.page == "techwall":
     st.title("TechWall Code Editor Creator")
-    campaign_col, _ = st.columns([1, 3])
+
+campaign_col, _ = st.columns([1, 3])
 with campaign_col:
     campaign_id = st.text_input(
         "Campaign ID",
