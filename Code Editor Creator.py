@@ -75,6 +75,7 @@ if st.button("Generate TW Code Editor"):
             if response.headers.get("content-type", "").lower().startswith("application/json"):
                 raw_json = json.dumps(response.json())
             else:
+                raw_json = response.text
                 data = json.loads(raw_json)
                 all_numbers = extract_phone_numbers(raw_json)
 
