@@ -48,34 +48,34 @@ if st.session_state.page == "home":
 elif st.session_state.page == "techwall":
     st.title("TechWall Code Editor Creator")
 
-campaign_col, _ = st.columns([1, 3])
-with campaign_col:
-    campaign_id = st.text_input(
-        "Campaign ID",
-        max_chars=4,
-        placeholder="1234",
-        help="Enter the 4-digit campaign ID for the webhook.",
-    )
+    campaign_col, _ = st.columns([1, 3])
+    with campaign_col:
+        campaign_id = st.text_input(
+            "Campaign ID",
+            max_chars=4,
+            placeholder="1234",
+            help="Enter the 4-digit campaign ID for the webhook.",
+        )
+        
+    raw_json = ""
     
-raw_json = ""
-
-if st.button("Generate TW Code Editor"):
-    if not campaign_id.strip():
-        error_message = "Please enter a 4-digit campaign ID before generating."
-    elif not campaign_id.isdigit() or len(campaign_id) != 4:
-        error_message = "Campaign ID must be exactly 4 digits."
-    else:
-        try:
-            response = requests.post(
-                "https://apps.dgaauto.com/virtualAgentData/webhook",
-                params={"campaign_id": campaign_id},
-                timeout=15,
-            )
-            response.raise_for_status()
-            if response.headers.get("content-type", "").lower().startswith("application/json"):
-                raw_json = json.dumps(response.json())
-            else:
-                raw_json = response.text
+    if st.button("Generate TW Code Editor"):
+        if not campaign_id.strip():
+            error_message = "Please enter a 4-digit campaign ID before generating."
+        elif not campaign_id.isdigit() or len(campaign_id) != 4:
+            error_message = "Campaign ID must be exactly 4 digits."
+        else:
+            try:
+                response = requests.post(
+                    "https://apps.dgaauto.com/virtualAgentData/webhook",
+                    params={"campaign_id": campaign_id},
+                    timeout=15,
+                )
+                response.raise_for_status()
+                if response.headers.get("content-type", "").lower().startswith("application/json"):
+                    raw_json = json.dumps(response.json())
+                else:
+                    raw_json = response.text
                     
             data = json.loads(raw_json)
             all_numbers = extract_phone_numbers(raw_json)
