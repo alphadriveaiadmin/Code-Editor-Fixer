@@ -79,7 +79,9 @@ elif st.session_state.page == "techwall":
 
                 data = json.loads(raw_json)
                 all_numbers = extract_phone_numbers(raw_json)
-
+            except Exception as e:
+                st.error(f"Error parsing JSON: {e}")
+            else:
                 trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
 def wf(obj):
     data = extract.extract_from_features(obj=obj['transcript'], features=features, featuresToExtract=['first_name', 'last_name', 'sentiment', 'email_address', 'vehicle_make', 'vehicle_model', 'vehicle_year', 'appointment_date', 'summary', 'disposition', 'disposition_id', 'transportation_type',  'callback_time', 'callback', 'has_multiple_accounts', 'book_appointment_error'])
@@ -100,8 +102,6 @@ def wf(obj):
     reporting_res = api.post_req(url ="https://apps.dgaauto.com/virtualAgentDataImport/webhook", headers={{"x-api-key": "$2a$11$5GHNF.BbEILij03XRr163eV0lrbRGu6Rq.jlycXAvB.fddAZkO5GK"}}, data={{"id": row_id, "campaign_id": {data['campaign_id']}, "recording": data["recording"], "transcript": data['transcript'], "api_logs":obj['functions'], "call_status": data['call_status'], "call_id": data['call_id'], "start_time": data['start_time'], "end_time": data['end_time'], "first_name": data["first_name"], "last_name": data["last_name"], "phone_number": data["phone_number"], "sentiment": data["sentiment"], "email_address": data["email_address"], "vehicle_make": data["vehicle_make"], "vehicle_model": data["vehicle_model"], "vehicle_year": data["vehicle_year"], "appointment_date": data["appointment_date"], "summary": data["summary"], "disposition": data["disposition"], "disposition_id": data["disposition_id"], "transportation_type": data["transportation_type"], "callback_time": data["callback_time"], "callback": data["callback"], "has_multiple_accounts": data["has_multiple_accounts"], "book_appointment_error": data["book_appointment_error"]}})
     s3.upload_file_from_url(url=obj["recording_url"], imageName=f"{{call_id}}-{data['dealership_id']}", fileExtension="wav")"""
                 st.code(trigger, language="python")
-            except Exception as e:
-                st.error(f"Error parsing JSON: {e}")
 
 # ---------- Xtime Code Editor ----------
 elif st.session_state.page == "xtime":
@@ -138,7 +138,9 @@ elif st.session_state.page == "xtime":
 
                 data = json.loads(raw_json)
                 all_numbers = extract_phone_numbers(raw_json)
-                
+            except Exception as e:
+                st.error(f"Error parsing JSON: {e}")
+            else:
                 trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", start_function=params['start_function'], generateBearerToken=params['bearer_token'], phoneNumber=params['phone_number'], allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="America/New_York", language='multi')
 def wf(obj):
     data = extract.extract_from_features(obj=obj['transcript'], features=features, featuresToExtract=['first_name', 'last_name', 'sentiment', 'email_address', 'vehicle_make', 'vehicle_model', 'vehicle_year', 'appointment_date', 'summary', 'disposition', 'disposition_id', 'transportation_type',  'callback_time', 'callback', 'has_multiple_accounts', 'book_appointment_error'])
@@ -157,6 +159,4 @@ def wf(obj):
     api.post_req(url ="https://webhook.site/bcaf7914-929e-495e-bcff-5ab35a9f436c", data ={{"campaign_id": {data['campaign_id']}, "agent_comments": data['summary'], "call_back": data['callback'], "call_disposition_id": data["disposition_id"], "advisor": "", "dealer_id": {data['dealership_id']}, "first_name": data['first_name'], "last_name": data["last_name"], "phone": data["phone_number"], "vehicle_year": data['vehicle_year'], "vehicle_model": data["vehicle_model"], "vehicle_make": data["vehicle_make"]}})
     reporting_res = api.post_req(url ="https://apps.dgaauto.com/virtualAgentDataImport/webhook", headers={{"x-api-key": "$2a$11$5GHNF.BbEILij03XRr163eV0lrbRGu6Rq.jlycXAvB.fddAZkO5GK"}}, data={{"id": row_id, "campaign_id": {data['campaign_id']}, "recording": data["recording"], "transcript": data['transcript'], "api_logs":obj['functions'], "call_status": data['call_status'], "call_id": data['call_id'], "start_time": data['start_time'], "end_time": data['end_time'], "first_name": data["first_name"], "last_name": data["last_name"], "phone_number": data["phone_number"], "sentiment": data["sentiment"], "email_address": data["email_address"], "vehicle_make": data["vehicle_make"], "vehicle_model": data["vehicle_model"], "vehicle_year": data["vehicle_year"], "appointment_date": data["appointment_date"], "summary": data["summary"], "disposition": data["disposition"], "disposition_id": data["disposition_id"], "transportation_type": data["transportation_type"], "callback_time": data["callback_time"], "callback": data["callback"], "has_multiple_accounts": data["has_multiple_accounts"], "book_appointment_error": data["book_appointment_error"]}})
     s3.upload_file_from_url(url=obj["recording_url"], imageName=f"{{call_id}}-3065", fileExtension="wav")"""
-            st.code(trigger, language="python")
-        except Exception as e:
-            st.error(f"Error parsing JSON: {e}")
+                st.code(trigger, language="python")
