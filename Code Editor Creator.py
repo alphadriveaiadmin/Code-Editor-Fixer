@@ -106,12 +106,39 @@ def wf(obj):
 # ---------- Xtime Code Editor ----------
 elif st.session_state.page == "xtime":
     st.title("Xtime Code Editor Creator")
-    input_json = st.text_area("Paste JSON Input Here", height=400)
-    if st.button("Generate Xtime Trigger"):
-        try:
-            data = json.loads(input_json)
-            all_numbers = extract_phone_numbers(input_json)
+    
+    campaign_col, _ = st.columns([1, 3])
+    with campaign_col:
+        campaign_id = st.text_input(
+            "Campaign ID",
+            max_chars=4,
+            placeholder="1234",
+            help="Enter the 4-digit campaign ID for the webhook.",
+        )
 
+    raw_json = ""
+
+    if st.button("Generate Xtime Code Editor"):
+        if not campaign_id.strip():
+            error_message = "Please enter a 4-digit campaign ID before generating."
+        elif not campaign_id.isdigit() or len(campaign_id) != 4:
+            error_message = "Campaign ID must be exactly 4 digits."
+        else:
+            try:
+                response = requests.post(
+                    "https://apps.dgaauto.com/virtualAgentData/webhook",
+                    params={"campaign_id": campaign_id},
+                    timeout=15,
+                )
+                response.raise_for_status()
+                if response.headers.get("content-type", "").lower().startswith("application/json"):
+                    raw_json = json.dumps(response.json())
+                else:
+                    raw_json = response.text
+
+                data = json.loads(raw_json)
+                all_numbers = extract_phone_numbers(raw_json)
+                
             trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", start_function=params['start_function'], generateBearerToken=params['bearer_token'], phoneNumber=params['phone_number'], allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="America/New_York", language='multi')
 def wf(obj):
     data = extract.extract_from_features(obj=obj['transcript'], features=features, featuresToExtract=['first_name', 'last_name', 'sentiment', 'email_address', 'vehicle_make', 'vehicle_model', 'vehicle_year', 'appointment_date', 'summary', 'disposition', 'disposition_id', 'transportation_type',  'callback_time', 'callback', 'has_multiple_accounts', 'book_appointment_error'])
