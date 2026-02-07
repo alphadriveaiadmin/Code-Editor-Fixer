@@ -59,26 +59,26 @@ with campaign_col:
     
 raw_json = ""
 
-    if st.button("Generate TW Code Editor"):
-        if not campaign_id.strip():
-            error_message = "Please enter a 4-digit campaign ID before generating."
-        elif not campaign_id.isdigit() or len(campaign_id) != 4:
-            error_message = "Campaign ID must be exactly 4 digits."
-        else:
-            try:
-                response = requests.post(
-                    "https://apps.dgaauto.com/virtualAgentData/webhook",
-                    params={"campaign_id": campaign_id},
-                    timeout=15,
-                )
-                response.raise_for_status()
-                if response.headers.get("content-type", "").lower().startswith("application/json"):
-                    raw_json = json.dumps(response.json())
-                else:
-                    raw_json = response.text
+if st.button("Generate TW Code Editor"):
+    if not campaign_id.strip():
+        error_message = "Please enter a 4-digit campaign ID before generating."
+    elif not campaign_id.isdigit() or len(campaign_id) != 4:
+        error_message = "Campaign ID must be exactly 4 digits."
+    else:
+        try:
+            response = requests.post(
+                "https://apps.dgaauto.com/virtualAgentData/webhook",
+                params={"campaign_id": campaign_id},
+                timeout=15,
+            )
+            response.raise_for_status()
+            if response.headers.get("content-type", "").lower().startswith("application/json"):
+                raw_json = json.dumps(response.json())
+            else:
+                raw_json = response.text
                     
-                data = json.loads(raw_json)
-                all_numbers = extract_phone_numbers(raw_json)
+            data = json.loads(raw_json)
+            all_numbers = extract_phone_numbers(raw_json)
 
             trigger = f"""@trigger voice.call_received(wsBaseUrl="voicev1.onrender.com", phoneNumber=params['phone_number'], start_function={{"name":"start_function","url":"{data['virtual_agent_url']}/gs-appointment-api/lookupCustomer?dealerId={data['virtual_agent_dealer_code']}","auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
 def wf(obj):
