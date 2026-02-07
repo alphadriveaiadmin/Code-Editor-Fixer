@@ -203,7 +203,7 @@ elif st.session_state.page == "mykaarma":
                 data = json.loads(raw_json)
                 all_numbers = extract_phone_numbers(raw_json)
                 
-                trigger = f"""@trigger voice.call_received(phoneNumber=params['phone_number'], start_function={"dealership_endpoint": "{dealer_endpoint}"},"auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
+                trigger = f"""@trigger voice.call_received(phoneNumber=params['phone_number'], start_function={"dealership_endpoint": "{{dealer_endpoint}}"},"auth":{{"username":"dga_scheduler","password":"Green3Red4Blue"}}}}, allowedTransferNumbers={all_numbers}, start_sentence=params["first_sentence"], objective=params["objective"], functions=params['tools'], voiceId="11labs-Cimo", model='gpt-4o', sensitivity="0.7", timezone="{data['dealership_timezone']}", language='multi')
     def wf(obj):
         data = extract.extract_from_features(obj=obj['transcript'], features=features, featuresToExtract=['first_name', 'last_name', 'sentiment', 'email_address', 'vehicle_make', 'vehicle_model', 'vehicle_year', 'appointment_date', 'summary', 'disposition', 'disposition_id', 'transportation_type',  'callback_time', 'callback', 'has_multiple_accounts', 'book_appointment_error'])
         data["transcript"] = obj["transcript"]
