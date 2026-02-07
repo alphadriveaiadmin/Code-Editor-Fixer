@@ -45,7 +45,7 @@ if st.session_state.page == "home":
             st.rerun()
 
 # ---------- TechWall Code Editor ----------
-eelif st.session_state.page == "techwall":
+elif st.session_state.page == "techwall":
     st.title("TechWall Code Editor Creator")
 
     campaign_col, _ = st.columns([1, 3])
