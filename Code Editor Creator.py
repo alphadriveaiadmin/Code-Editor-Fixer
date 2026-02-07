@@ -162,7 +162,7 @@ elif st.session_state.page == "xtime":
                 
 # ---------- myKaarma Code Editor ----------
 elif st.session_state.page == "mykaarma":
-    st.title("TechWall Code Editor Creator")
+    st.title("MyKaarma Code Editor Creator")
 
     campaign_col, _ = st.columns([1, 3])
     with campaign_col:
@@ -179,7 +179,7 @@ elif st.session_state.page == "mykaarma":
     with endpoint_col:
             endpoint = st.text_input(
             "MyKaarma Endpoint",
-            help="Enter the MyKaarma Endpoint.",
+            help="Enter the MyKaarma Dealership Endpoint.",
         )
 
     if st.button("Generate MyKaarma Code Editor"):
